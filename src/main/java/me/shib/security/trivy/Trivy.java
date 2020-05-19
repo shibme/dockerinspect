@@ -9,9 +9,15 @@ import java.io.IOException;
 
 final class Trivy {
 
+    private static transient final boolean skipScan;
     private static transient final Gson gson = new Gson();
     private static transient final String toolName = "Trivy";
     private static transient final File trivyOutputFile = new File("trivy-out.json");
+
+    static {
+        String skipScanStr = System.getenv("TRIVY_STEWARD_SKIP_SCAN");
+        skipScan = skipScanStr != null && skipScanStr.equalsIgnoreCase("TRUE");
+    }
 
     private static String readFromFile(File file) {
         StringBuilder contentBuilder = new StringBuilder();
@@ -38,9 +44,11 @@ final class Trivy {
 
     static synchronized TrivyReport run(String imageName) throws TrivyException {
         try {
-            String command = "trivy -f json -o " + trivyOutputFile.getName() + " " + imageName;
-            CommandRunner commandRunner = new CommandRunner(command, toolName);
-            commandRunner.execute();
+            if (!skipScan) {
+                String command = "trivy -f json -o " + trivyOutputFile.getName() + " " + imageName;
+                CommandRunner commandRunner = new CommandRunner(command, toolName);
+                commandRunner.execute();
+            }
             return getReport(trivyOutputFile);
         } catch (Exception e) {
             throw new TrivyException(e);
