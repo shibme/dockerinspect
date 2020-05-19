@@ -1,0 +1,27 @@
+stages:
+  - "Build"
+  - "Release"
+
+Maven Build:
+  image: maven:3-jdk-11
+  stage: "Build"
+  script: mvn -s .m2/settings.xml clean deploy
+  artifacts:
+    expire_in: 1 hour
+    paths:
+      - target/trivy-steward-jar-with-dependencies.jar
+
+Docker Release:
+  image: docker:latest
+  services:
+    - docker:dind
+  variables:
+    DOCKER_TLS_CERTDIR: ""
+  stage: "Release"
+  script:
+    - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+    - docker build -t shibme/trivy-steward .
+    - docker push shibme/trivy-steward
+    - docker logout
+  only:
+    - master
