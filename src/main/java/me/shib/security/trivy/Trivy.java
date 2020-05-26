@@ -39,6 +39,8 @@ final class Trivy {
         if (!json.isEmpty()) {
             TrivyReport[] reports = gson.fromJson(json, TrivyReport[].class);
             if (reports.length > 1) {
+                System.out.println("Report JSON:");
+                System.out.println(json);
                 throw new TrivyException("More than one reports identified");
             }
             return reports[0];
