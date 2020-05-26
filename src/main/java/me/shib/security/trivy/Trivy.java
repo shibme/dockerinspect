@@ -6,6 +6,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 final class Trivy {
 
@@ -13,7 +15,10 @@ final class Trivy {
             TrivyStewardEnv.TRIVY_STEWARD_SKIP_SCAN.getAsBoolean();
     private static transient final Gson gson = new Gson();
     private static transient final String toolName = "Trivy";
-    private static transient final File trivyOutputFile = new File("trivy-out.json");
+    private static transient final SimpleDateFormat outFilDateFormat =
+            new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
+    private static transient final File trivyOutputFile =
+            new File("trivy-out-" + outFilDateFormat.format(new Date()) + ".json");
 
     private static String readFromFile(File file) {
         StringBuilder contentBuilder = new StringBuilder();
