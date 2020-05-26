@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-TRIVY_STEWARD_IMAGE="shibme/trivy-steward"
 if [ -n "$1" ]; then
   export TRIVY_STEWARD_IMAGE=$1
 fi
@@ -17,12 +16,14 @@ if test "${DOCKER_VERSION_RESPONSE#*$EXPECTED_RESPONSE}" != "$DOCKER_VERSION_RES
     TRIVY_STEWARD_CONTAINER="trivy-steward"
   fi
   TRIVY_STEWARD_CONTAINER=${TRIVY_STEWARD_CONTAINER// /_}
-  if [ -z "$1" ]; then
+  if [ -z "$TRIVY_STEWARD_IMAGE" ]; then
+    export TRIVY_STEWARD_IMAGE="shibme/trivy-steward"
     docker pull "$TRIVY_STEWARD_IMAGE"
   fi
-  TRIVY_STEWARD_CACHE="$(pwd)/trivy-cache"
 
+  TRIVY_STEWARD_CACHE="$(pwd)/trivy-cache"
   mkdir -p $TRIVY_STEWARD_CACHE
+
   TRIVY_STEWARD_COMMAND="docker run --rm "
   TRIVY_STEWARD_COMMAND="$TRIVY_STEWARD_COMMAND -e TRIVY_TARGET_IMAGE"
   TRIVY_STEWARD_COMMAND="$TRIVY_STEWARD_COMMAND -e TRIVY_STEWARD_SKIP_SCAN"
