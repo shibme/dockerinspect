@@ -1,7 +1,4 @@
 #!/usr/bin/env bash
-if [ -n "$1" ]; then
-  export TRIVY_STEWARD_IMAGE=$1
-fi
 if [ -z "$TRIVY_TARGET_IMAGE" ]; then
   echo "Please set TRIVY_TARGET_IMAGE"
   exit 1
