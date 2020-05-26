@@ -11,7 +11,6 @@ final class CommandRunner {
     private final transient String label;
     private final transient File workDir;
     private transient Process process;
-    private transient boolean showConsoleLog;
 
     CommandRunner(String command, File workDir, String label) {
         this.command = command;
@@ -21,7 +20,6 @@ final class CommandRunner {
         this.streamContent = new StringBuilder();
         this.inputProcessor.start();
         this.errorProcessor.start();
-        this.showConsoleLog = true;
         this.label = label.toUpperCase();
     }
 
@@ -31,24 +29,14 @@ final class CommandRunner {
 
     private synchronized void addLine(String line) {
         streamContent.append(line).append("\n");
-        if (showConsoleLog) {
-            System.out.println("[" + label + "] " + line);
-        }
+        System.out.println("[" + label + "] " + line);
     }
 
     private Process getProcess() {
         return this.process;
     }
 
-    void suppressConsoleLog() {
-        this.showConsoleLog = false;
-    }
-
-    String getResult() {
-        return streamContent.toString();
-    }
-
-    int execute() throws IOException, InterruptedException {
+    void execute() throws IOException, InterruptedException {
         if (workDir != null) {
             process = Runtime.getRuntime().exec(command, null, workDir);
         } else {
@@ -57,14 +45,13 @@ final class CommandRunner {
         this.inputProcessor.join();
         this.errorProcessor.join();
         process.waitFor();
-        return process.exitValue();
     }
 
     private enum StreamType {
         INPUT, ERROR
     }
 
-    private final class StreamProcessor extends Thread {
+    private static final class StreamProcessor extends Thread {
 
         private final CommandRunner commandRunner;
         private final StreamType type;

@@ -3,19 +3,18 @@ package me.shib.security.trivy;
 import me.shib.steward.Steward;
 import me.shib.steward.StewardConfig;
 import me.shib.steward.StewardData;
+import me.shib.steward.StewardException;
+
+import java.util.List;
 
 public final class Main {
 
-    public static void main(String[] args) {
-        try {
-            String targetImageName = TrivyStewardEnv.TRIVY_TARGET_IMAGE.getAsString();
-            TrivyReport report = Trivy.run(targetImageName);
-            StewardData stewardData = TSConvert.toStewardData(report);
-            Steward.process(stewardData, StewardConfig.getConfig());
-            System.exit(0);
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
+    public static void main(String[] args) throws TrivyException, StewardException {
+        TrivyStewardEnv.validateEnv();
+        String targetImageName = TrivyStewardEnv.TRIVY_TARGET_IMAGE.getAsString();
+        boolean osOnlyScan = !TrivyStewardEnv.TRIVY_STEWARD_DEPENDENCY_SCAN.getAsBoolean();
+        List<TrivyReport> reports = Trivy.run(targetImageName, osOnlyScan);
+        StewardData stewardData = TSConvert.toStewardData(reports);
+        Steward.process(stewardData, StewardConfig.getConfig());
     }
 }

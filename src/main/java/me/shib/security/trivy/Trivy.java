@@ -7,12 +7,12 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 final class Trivy {
 
-    private static transient final boolean skipScan =
-            TrivyStewardEnv.TRIVY_STEWARD_SKIP_SCAN.getAsBoolean();
     private static transient final Gson gson = new Gson();
     private static transient final String toolName = "Trivy";
     private static transient final SimpleDateFormat outFilDateFormat =
@@ -20,10 +20,10 @@ final class Trivy {
     private static transient final File trivyOutputFile =
             new File("trivy-out-" + outFilDateFormat.format(new Date()) + ".json");
 
-    private static String readFromFile(File file) {
+    private static String readFromFile() {
         StringBuilder contentBuilder = new StringBuilder();
         try {
-            BufferedReader br = new BufferedReader(new FileReader(file));
+            BufferedReader br = new BufferedReader(new FileReader(Trivy.trivyOutputFile));
             String line;
             while ((line = br.readLine()) != null) {
                 contentBuilder.append(line).append("\n");
@@ -34,31 +34,34 @@ final class Trivy {
         return contentBuilder.toString();
     }
 
-    private static TrivyReport getReport(File file) throws TrivyException {
-        String json = readFromFile(file);
+    private static List<TrivyReport> getReports(boolean osOnlyScan) throws TrivyException {
+        String json = readFromFile();
         if (!json.isEmpty()) {
             TrivyReport[] reports = gson.fromJson(json, TrivyReport[].class);
-            if (reports.length > 1) {
+            if (osOnlyScan && reports.length > 1) {
                 System.out.println("Report JSON:");
                 System.out.println(json);
                 throw new TrivyException("More than one reports identified");
             }
-            return reports[0];
+            return Arrays.asList(reports);
         }
         return null;
     }
 
-    static synchronized TrivyReport run(String imageName) throws TrivyException {
+    static synchronized List<TrivyReport> run(String imageName, boolean osOnlyScan) throws TrivyException {
         if (imageName == null) {
             throw new TrivyException("Image name required to run scan.");
         }
         try {
-            if (!skipScan) {
-                String command = "trivy -f json -o " + trivyOutputFile.getName() + " " + imageName;
-                CommandRunner commandRunner = new CommandRunner(command, toolName);
-                commandRunner.execute();
+            StringBuilder command = new StringBuilder();
+            command.append("trivy -f json -o ").append(trivyOutputFile.getName()).append(" ");
+            if (osOnlyScan) {
+                command.append("--vuln-type os ");
             }
-            return getReport(trivyOutputFile);
+            command.append(imageName);
+            CommandRunner commandRunner = new CommandRunner(command.toString(), toolName);
+            commandRunner.execute();
+            return getReports(osOnlyScan);
         } catch (Exception e) {
             throw new TrivyException(e);
         }
