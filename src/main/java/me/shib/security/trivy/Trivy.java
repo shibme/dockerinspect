@@ -9,15 +9,11 @@ import java.io.IOException;
 
 final class Trivy {
 
-    private static transient final boolean skipScan;
+    private static transient final boolean skipScan =
+            TrivyStewardEnv.TRIVY_STEWARD_SKIP_SCAN.getAsBoolean();
     private static transient final Gson gson = new Gson();
     private static transient final String toolName = "Trivy";
     private static transient final File trivyOutputFile = new File("trivy-out.json");
-
-    static {
-        String skipScanStr = System.getenv("TRIVY_STEWARD_SKIP_SCAN");
-        skipScan = skipScanStr != null && skipScanStr.equalsIgnoreCase("TRUE");
-    }
 
     private static String readFromFile(File file) {
         StringBuilder contentBuilder = new StringBuilder();
@@ -37,7 +33,7 @@ final class Trivy {
         String json = readFromFile(file);
         if (!json.isEmpty()) {
             TrivyReport[] reports = gson.fromJson(json, TrivyReport[].class);
-            if(reports.length > 1) {
+            if (reports.length > 1) {
                 throw new TrivyException("More than one reports identified");
             }
             return reports[0];
@@ -46,6 +42,9 @@ final class Trivy {
     }
 
     static synchronized TrivyReport run(String imageName) throws TrivyException {
+        if (imageName == null) {
+            throw new TrivyException("Image name required to run scan.");
+        }
         try {
             if (!skipScan) {
                 String command = "trivy -f json -o " + trivyOutputFile.getName() + " " + imageName;

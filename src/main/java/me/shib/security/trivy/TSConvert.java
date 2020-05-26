@@ -66,7 +66,7 @@ class TSConvert {
     }
 
     static StewardData toStewardData(TrivyReport report) {
-        return toStewardData(report, null);
+        return toStewardData(report, TrivyStewardEnv.TRIVY_STEWARD_PROJECT.getAsString());
     }
 
 }
