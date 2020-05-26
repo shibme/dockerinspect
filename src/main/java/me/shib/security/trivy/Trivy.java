@@ -33,10 +33,13 @@ final class Trivy {
         return contentBuilder.toString();
     }
 
-    private static TrivyReport getReport(File file) {
+    private static TrivyReport getReport(File file) throws TrivyException {
         String json = readFromFile(file);
         if (!json.isEmpty()) {
             TrivyReport[] reports = gson.fromJson(json, TrivyReport[].class);
+            if(reports.length > 1) {
+                throw new TrivyException("More than one reports identified");
+            }
             return reports[0];
         }
         return null;
