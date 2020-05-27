@@ -18,9 +18,9 @@ class TSConvert {
     }
 
     static StewardData toStewardData(List<TrivyReport> reports) throws TrivyException {
-        String projectName = TrivyStewardEnv.TRIVY_STEWARD_PROJECT.getAsString();
+        String projectName = TrivyStewardEnv.TS_PROJECT_NAME.getAsString();
         if (projectName == null || projectName.isEmpty()) {
-            throw new TrivyException("Set " + TrivyStewardEnv.TRIVY_STEWARD_PROJECT);
+            throw new TrivyException("Set " + TrivyStewardEnv.TS_PROJECT_NAME);
         }
         StewardData data = new StewardData(projectName, toolName);
         data.addContext(projectName);

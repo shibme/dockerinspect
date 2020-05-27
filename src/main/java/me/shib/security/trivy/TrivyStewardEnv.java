@@ -2,9 +2,9 @@ package me.shib.security.trivy;
 
 enum TrivyStewardEnv {
 
-    TRIVY_TARGET_IMAGE(true),
-    TRIVY_STEWARD_PROJECT(true),
-    TRIVY_STEWARD_DEPENDENCY_SCAN(false);
+    TS_TARGET_IMAGE(true),
+    TS_PROJECT_NAME(true),
+    TS_DEPENDENCY_SCAN(false);
 
     private final boolean required;
 
