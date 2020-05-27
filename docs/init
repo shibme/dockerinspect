@@ -1,8 +1,4 @@
 #!/usr/bin/env bash
-if [ -z "$TRIVY_TARGET_IMAGE" ]; then
-  echo "Please set TRIVY_TARGET_IMAGE"
-  exit 1
-fi
 DOCKER_VERSION_RESPONSE=$(docker -v)
 EXPECTED_RESPONSE="Docker version "
 if test "${DOCKER_VERSION_RESPONSE#*$EXPECTED_RESPONSE}" != "$DOCKER_VERSION_RESPONSE"; then
