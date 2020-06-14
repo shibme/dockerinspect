@@ -15,8 +15,7 @@ DockerInspect Base Image Build:
     - docker push $DOCKER_IMAGE
     - docker logout
   only:
-    changes:
-      - dockerinspect-base/Dockerfile
+    - master
 
 Maven Build:
   image: maven:3-jdk-11
@@ -26,6 +25,8 @@ Maven Build:
     expire_in: 1 day
     paths:
       - target/dockerinspect-jar-with-dependencies.jar
+  only:
+    - master
 
 DockerInspect Image Release:
   image: docker:latest
