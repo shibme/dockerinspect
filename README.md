@@ -6,7 +6,7 @@ Container image scanning made simple for continuous integration
 ### Before we start,
 - Make sure the latest Docker CLI has been installed
 
-#### A bunch of environment variables for DockerInspect 🤷 [All optional]
+#### Some environment variables for DockerInspect 😬
 `DOCKERINSPECT_TARGET_IMAGE` - Required
 - The image name with tag [Better if available locally. If not, it will be pulled]
 
