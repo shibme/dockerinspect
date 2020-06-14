@@ -4,21 +4,21 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>me.shib.security</groupId>
-    <artifactId>trivy-steward</artifactId>
+    <artifactId>dockerinspect</artifactId>
     <version>1.0.0</version>
-    <name>Trivy Steward</name>
-    <description>Steward integration for Trivy</description>
-    <url>https://gitlab.com/shibme/trivy-steward</url>
+    <name>DockerInspect</name>
+    <description>Container image scanning made simple for continuous integration</description>
+    <url>https://gitlab.com/shibme/dockerinspect</url>
 
     <issueManagement>
-        <url>https://gitlab.com/shibme/trivy-steward/issues</url>
+        <url>https://gitlab.com/shibme/dockerinspect/issues</url>
         <system>GitLab Issues</system>
     </issueManagement>
 
     <scm>
-        <url>https://gitlab.com/shibme/trivy-steward</url>
-        <connection>scm:git:https://gitlab.com/shibme/trivy-steward.git</connection>
-        <developerConnection>scm:git:git@gitlab.com:shibme/trivy-steward.git</developerConnection>
+        <url>https://gitlab.com/shibme/dockerinspect</url>
+        <connection>scm:git:https://gitlab.com/shibme/dockerinspect.git</connection>
+        <developerConnection>scm:git:git@gitlab.com:shibme/dockerinspect.git</developerConnection>
     </scm>
 
     <developers>
@@ -63,13 +63,13 @@
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>3.3.0</version>
                 <configuration>
-                    <finalName>trivy-steward</finalName>
+                    <finalName>dockerinspect</finalName>
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>me.shib.security.trivy.Main</mainClass>
+                            <mainClass>me.shib.security.dockerinspect.Main</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

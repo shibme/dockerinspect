@@ -1,4 +1,4 @@
-package me.shib.security.trivy;
+package me.shib.security.dockerinspect;
 
 import me.shib.steward.StewardData;
 import me.shib.steward.StewardFinding;
@@ -10,17 +10,17 @@ class TSConvert {
     private static final transient String cveBaseURL = "https://nvd.nist.gov/vuln/detail/";
     private static final transient String toolName = "Trivy";
 
-    private static String getUrlForCVE(String cve) throws TrivyException {
+    private static String getUrlForCVE(String cve) throws DockerInspectException {
         if (cve != null && cve.toUpperCase().startsWith("CVE")) {
             return cveBaseURL + cve;
         }
-        throw new TrivyException("CVE provided is not valid");
+        throw new DockerInspectException("CVE provided is not valid");
     }
 
-    static StewardData toStewardData(List<TrivyReport> reports) throws TrivyException {
-        String projectName = TrivyStewardEnv.TS_PROJECT_NAME.getAsString();
+    static StewardData toStewardData(List<TrivyReport> reports) throws DockerInspectException {
+        String projectName = DocerInspectEnv.DOCKERINSPECT_PROJECT_NAME.getAsString();
         if (projectName == null || projectName.isEmpty()) {
-            throw new TrivyException("Set " + TrivyStewardEnv.TS_PROJECT_NAME);
+            throw new DockerInspectException("Set " + DocerInspectEnv.DOCKERINSPECT_PROJECT_NAME);
         }
         StewardData data = new StewardData(projectName, toolName);
         data.addContext(projectName);
@@ -40,7 +40,7 @@ class TSConvert {
                     try {
                         description.append("**[").append(vulnerability.getVulnerabilityId()).append("](")
                                 .append(getUrlForCVE(vulnerability.getVulnerabilityId())).append("):**");
-                    } catch (TrivyException e) {
+                    } catch (DockerInspectException e) {
                         description.append("**").append(vulnerability.getVulnerabilityId()).append(":**");
                     }
                     description.append("\n");

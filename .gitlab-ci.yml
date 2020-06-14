@@ -2,26 +2,39 @@ stages:
   - "Build"
   - "Release"
 
+DockerInspect Base Image Build:
+  stage: "Build"
+  variables:
+    DOCKER_IMAGE: "shibme/dockerinspect-base"
+  script:
+    - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+    - docker build -t $DOCKER_IMAGE dockerinspect-base
+    - docker push $DOCKER_IMAGE
+    - docker logout
+  only:
+    changes:
+      - dockerinspect-base/Dockerfile
+
 Maven Build:
   image: maven:3-jdk-11
   stage: "Build"
   script: mvn -s .m2/settings.xml clean install
   artifacts:
-    expire_in: 1 hour
+    expire_in: 1 day
     paths:
-      - target/trivy-steward-jar-with-dependencies.jar
+      - target/dockerinspect-jar-with-dependencies.jar
 
-Docker Release:
+DockerInspect Image Release:
   image: docker:latest
   services:
     - docker:dind
   variables:
-    DOCKER_TLS_CERTDIR: ""
+    DOCKER_IMAGE: "shibme/dockerinspect"
   stage: "Release"
   script:
     - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-    - docker build -t shibme/trivy-steward .
-    - docker push shibme/trivy-steward
+    - docker build -t $DOCKER_IMAGE .
+    - docker push $DOCKER_IMAGE
     - docker logout
   only:
     - master

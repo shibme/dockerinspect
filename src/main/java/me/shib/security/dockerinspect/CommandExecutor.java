@@ -1,8 +1,8 @@
-package me.shib.security.trivy;
+package me.shib.security.dockerinspect;
 
 import java.io.*;
 
-final class CommandRunner {
+final class CommandExecutor {
 
     private final transient String command;
     private final transient StreamProcessor inputProcessor;
@@ -12,7 +12,7 @@ final class CommandRunner {
     private final transient File workDir;
     private transient Process process;
 
-    CommandRunner(String command, File workDir, String label) {
+    CommandExecutor(String command, File workDir, String label) {
         this.command = command;
         this.workDir = workDir;
         this.inputProcessor = new StreamProcessor(this, StreamType.INPUT);
@@ -23,7 +23,7 @@ final class CommandRunner {
         this.label = label.toUpperCase();
     }
 
-    CommandRunner(String command, String label) {
+    CommandExecutor(String command, String label) {
         this(command, null, label);
     }
 
@@ -53,11 +53,11 @@ final class CommandRunner {
 
     private static final class StreamProcessor extends Thread {
 
-        private final CommandRunner commandRunner;
+        private final CommandExecutor commandExecutor;
         private final StreamType type;
 
-        private StreamProcessor(CommandRunner commandRunner, StreamType type) {
-            this.commandRunner = commandRunner;
+        private StreamProcessor(CommandExecutor commandExecutor, StreamType type) {
+            this.commandExecutor = commandExecutor;
             this.type = type;
         }
 
@@ -65,7 +65,7 @@ final class CommandRunner {
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
             String line;
             while ((line = reader.readLine()) != null) {
-                commandRunner.addLine(line);
+                commandExecutor.addLine(line);
             }
             reader.close();
         }
@@ -73,7 +73,7 @@ final class CommandRunner {
         @Override
         public void run() {
             Process process;
-            while ((process = commandRunner.getProcess()) == null) {
+            while ((process = commandExecutor.getProcess()) == null) {
                 try {
                     Thread.sleep(5);
                 } catch (InterruptedException e) {

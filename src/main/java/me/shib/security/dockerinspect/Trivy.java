@@ -1,4 +1,4 @@
-package me.shib.security.trivy;
+package me.shib.security.dockerinspect;
 
 import com.google.gson.Gson;
 
@@ -34,23 +34,23 @@ final class Trivy {
         return contentBuilder.toString();
     }
 
-    private static List<TrivyReport> getReports(boolean osOnlyScan) throws TrivyException {
+    private static List<TrivyReport> getReports(boolean osOnlyScan) throws DockerInspectException {
         String json = readFromFile();
         if (!json.isEmpty()) {
             TrivyReport[] reports = gson.fromJson(json, TrivyReport[].class);
             if (osOnlyScan && reports.length > 1) {
                 System.out.println("Report JSON:");
                 System.out.println(json);
-                throw new TrivyException("More than one reports identified");
+                throw new DockerInspectException("More than one reports identified");
             }
             return Arrays.asList(reports);
         }
         return null;
     }
 
-    static synchronized List<TrivyReport> run(String imageName, boolean osOnlyScan) throws TrivyException {
+    static synchronized List<TrivyReport> run(String imageName, boolean osOnlyScan) throws DockerInspectException {
         if (imageName == null) {
-            throw new TrivyException("Image name required to run scan.");
+            throw new DockerInspectException("Image name required to run scan.");
         }
         try {
             StringBuilder command = new StringBuilder();
@@ -59,11 +59,11 @@ final class Trivy {
                 command.append("--vuln-type os ");
             }
             command.append(imageName);
-            CommandRunner commandRunner = new CommandRunner(command.toString(), toolName);
-            commandRunner.execute();
+            CommandExecutor commandExecutor = new CommandExecutor(command.toString(), toolName);
+            commandExecutor.execute();
             return getReports(osOnlyScan);
         } catch (Exception e) {
-            throw new TrivyException(e);
+            throw new DockerInspectException(e);
         }
     }
 
