@@ -14,9 +14,9 @@ if test "${DOCKER_VERSION_RESPONSE#*$EXPECTED_RESPONSE}" != "$DOCKER_VERSION_RES
     docker pull "$DOCKERINSPECT_IMAGE"
   fi
 
-  DOCKERINSPECT_CACHE="$(pwd)/trivy-cache"
+  DOCKERINSPECT_CACHE="$(pwd)/dockerinspect/cache"
   mkdir -p $DOCKERINSPECT_CACHE
-  DOCKERINSPECT_WORKSPACE="$(pwd)/trivy-workspace"
+  DOCKERINSPECT_WORKSPACE="$(pwd)/dockerinspect/workspace"
   mkdir -p $DOCKERINSPECT_WORKSPACE
 
   DOCKERINSPECT_COMMAND="docker run --rm "
