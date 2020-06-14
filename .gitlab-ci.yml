@@ -7,13 +7,11 @@ DockerInspect Base Image Build:
   services:
     - docker:dind
   stage: "Build"
-  variables:
-    DOCKER_IMAGE: "shibme/dockerinspect-base"
   script:
-    - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-    - docker build -t $DOCKER_IMAGE dockerinspect-base
-    - docker push $DOCKER_IMAGE
-    - docker logout
+    - echo $CI_REGISTRY_PASSWORD | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
+    - docker build -t $CI_REGISTRY_IMAGE:base .
+    - docker push $CI_REGISTRY_IMAGE:base
+    - docker logout $CI_REGISTRY
   only:
     - master
 
