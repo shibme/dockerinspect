@@ -9,7 +9,7 @@ DockerInspect Base Image Build:
   stage: "Build"
   script:
     - echo $CI_REGISTRY_PASSWORD | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
-    - docker build -t $CI_REGISTRY_IMAGE:base .
+    - docker build -t $CI_REGISTRY_IMAGE:base dockerinspect-base
     - docker push $CI_REGISTRY_IMAGE:base
     - docker logout $CI_REGISTRY
   only:
