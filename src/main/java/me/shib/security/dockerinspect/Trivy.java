@@ -14,7 +14,7 @@ import java.util.List;
 final class Trivy {
 
     private static transient final Gson gson = new Gson();
-    private static transient final String toolName = "Trivy";
+    private static transient final String scanTool = "Trivy";
     private static transient final SimpleDateFormat outFilDateFormat =
             new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
     private static transient final File trivyOutputFile =
@@ -59,7 +59,7 @@ final class Trivy {
                 command.append("--vuln-type os ");
             }
             command.append(imageName);
-            CommandExecutor commandExecutor = new CommandExecutor(command.toString(), toolName);
+            CommandExecutor commandExecutor = new CommandExecutor(command.toString(), scanTool);
             commandExecutor.execute();
             return getReports(osOnlyScan);
         } catch (Exception e) {

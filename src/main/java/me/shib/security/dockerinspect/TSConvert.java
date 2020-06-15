@@ -8,7 +8,7 @@ import java.util.List;
 class TSConvert {
 
     private static final transient String cveBaseURL = "https://nvd.nist.gov/vuln/detail/";
-    private static final transient String toolName = "Trivy";
+    private static final transient String toolName = "DockerInspect";
 
     private static String getUrlForCVE(String cve) throws DockerInspectException {
         if (cve != null && cve.toUpperCase().startsWith("CVE")) {
