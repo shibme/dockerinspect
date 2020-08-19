@@ -1,7 +1,6 @@
 package me.shib.security.dockerinspect;
 
 import me.shib.steward.Steward;
-import me.shib.steward.StewardConfig;
 import me.shib.steward.StewardData;
 import me.shib.steward.StewardException;
 
@@ -15,6 +14,6 @@ public final class Main {
         boolean osOnlyScan = !DocerInspectEnv.DOCKERINSPECT_DEPENDENCY_SCAN.getAsBoolean();
         List<TrivyReport> reports = Trivy.run(targetImageName, osOnlyScan);
         StewardData stewardData = TSConvert.toStewardData(reports);
-        Steward.process(stewardData, StewardConfig.getConfig());
+        Steward.process(stewardData);
     }
 }
