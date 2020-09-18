@@ -63,7 +63,6 @@ if test "${DOCKER_VERSION_RESPONSE#*$EXPECTED_RESPONSE}" != "$DOCKER_VERSION_RES
 
   echo "Now running: $DOCKERINSPECT_CONTAINER"
   echo $DOCKERINSPECT_COMMAND | bash
-  docker rm $DOCKERINSPECT_CONTAINER
 else
   echo "Please install docker client before you begin."
   exit 1
