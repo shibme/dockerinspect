@@ -63,7 +63,9 @@ class TSConvert {
                     finding.setDescription(description.toString());
                     finding.addContext(vulnerability.getVulnerabilityId());
                     finding.addContext(vulnerability.getPackageName());
-                    finding.addContext(vulnerability.getSeveritySource());
+                    if (vulnerability.getSeveritySource() != null) {
+                        finding.addContext(vulnerability.getSeveritySource());
+                    }
                     data.addFinding(finding);
                 }
             }
