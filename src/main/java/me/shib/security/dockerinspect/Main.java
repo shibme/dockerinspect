@@ -15,5 +15,6 @@ public final class Main {
         List<TrivyReport> reports = Trivy.run(targetImageName, osOnlyScan);
         StewardData stewardData = TSConvert.toStewardData(reports);
         Steward.process(stewardData);
+        System.exit(0);
     }
 }
