@@ -5,7 +5,7 @@ stages:
 Maven Build:
   image: maven:3-jdk-11
   stage: "Build"
-  script: mvn -s .m2/settings.xml clean install
+  script: mvn clean install
   artifacts:
     expire_in: 1 day
     paths:
