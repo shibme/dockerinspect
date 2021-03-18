@@ -15,6 +15,9 @@ Container image scanning made simple for continuous integration
 
 `DOCKERINSPECT_DEPENDENCY_SCAN` - Optional
 - Set TRUE if application dependency vulnerabilities also need to be considered
+
+`DOCKERINSPECT_IGNORE_UNFIXED` - Optional
+- Set TRUE to ignore unfixed vulnerabilities
  
 #### A few more steps, in case you need to sync the findings to an issue tracker 🙄 [All optional]
 - Take a look into [this](https://gitlab.com/shibme/steward/-/blob/master/README.md#configuration-for-consumers) for instructions

@@ -48,7 +48,7 @@ final class Trivy {
         return null;
     }
 
-    static synchronized List<TrivyReport> run(String imageName, boolean osOnlyScan) throws DockerInspectException {
+    static synchronized List<TrivyReport> run(String imageName, boolean osOnlyScan, boolean ignoreUnfixed) throws DockerInspectException {
         if (imageName == null) {
             throw new DockerInspectException("Image name required to run scan.");
         }
@@ -57,6 +57,9 @@ final class Trivy {
             command.append("trivy -f json -o ").append(trivyOutputFile.getName()).append(" ");
             if (osOnlyScan) {
                 command.append("--vuln-type os ");
+            }
+            if (ignoreUnfixed) {
+                command.append("--ignore-unfixed ");
             }
             command.append(imageName);
             CommandExecutor commandExecutor = new CommandExecutor(command.toString(), scanTool);

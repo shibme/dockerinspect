@@ -18,9 +18,9 @@ class TSConvert {
     }
 
     static StewardData toStewardData(List<TrivyReport> reports) throws DockerInspectException {
-        String projectName = DocerInspectEnv.DOCKERINSPECT_PROJECT_NAME.getAsString();
+        String projectName = DockerInspectEnv.DOCKERINSPECT_PROJECT_NAME.getAsString();
         if (projectName == null || projectName.isEmpty()) {
-            throw new DockerInspectException("Set " + DocerInspectEnv.DOCKERINSPECT_PROJECT_NAME);
+            throw new DockerInspectException("Set " + DockerInspectEnv.DOCKERINSPECT_PROJECT_NAME);
         }
         StewardData data = new StewardData(projectName, toolName);
         data.addContext(projectName);

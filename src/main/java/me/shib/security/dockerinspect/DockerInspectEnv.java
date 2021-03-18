@@ -1,22 +1,23 @@
 package me.shib.security.dockerinspect;
 
-enum DocerInspectEnv {
+enum DockerInspectEnv {
 
     DOCKERINSPECT_TARGET_IMAGE("The image name with tag [Better if available locally. If not, it will be pulled]", true),
     DOCKERINSPECT_PROJECT_NAME("A unique project name for the scan to avoid duplicate issues", true),
-    DOCKERINSPECT_DEPENDENCY_SCAN("Set TRUE if application dependency vulnerabilities also need to be considered", false);
+    DOCKERINSPECT_DEPENDENCY_SCAN("Set TRUE if application dependency vulnerabilities also need to be considered", false),
+    DOCKERINSPECT_IGNORE_UNFIXED("Set TRUE to ignore unfixed vulnerabilities", false);
 
     private final String definition;
     private final boolean required;
 
-    DocerInspectEnv(String definition, boolean required) {
+    DockerInspectEnv(String definition, boolean required) {
         this.definition = definition;
         this.required = required;
     }
 
     static String getVarDefinitions() {
         StringBuilder varDefinitions = new StringBuilder();
-        for (DocerInspectEnv env : DocerInspectEnv.values()) {
+        for (DockerInspectEnv env : DockerInspectEnv.values()) {
             varDefinitions.append("\n").append(env).append("\n")
                     .append("\t- ").append(env.definition);
         }
@@ -24,7 +25,7 @@ enum DocerInspectEnv {
     }
 
     static void validateEnv() throws DockerInspectException {
-        for (DocerInspectEnv env : DocerInspectEnv.values()) {
+        for (DockerInspectEnv env : DockerInspectEnv.values()) {
             if (env.required && env.getValue() == null) {
                 throw new DockerInspectException("Please set " + env.name());
             }
