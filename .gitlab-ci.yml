@@ -46,7 +46,7 @@ Mirroring to DockerHub:
     - master
 
 Mirroring to AWS ECR Public:
-  image: amazon/aws-cli
+  image: docker:latest
   services:
     - docker:dind
   stage: "Mirror Image"
@@ -54,14 +54,12 @@ Mirroring to AWS ECR Public:
     DOCKER_REGISTRY: "public.ecr.aws"
     DOCKER_IMAGE: "public.ecr.aws/shibme/dockerinspect"
   before_script:
-    - amazon-linux-extras install docker
-    - aws --version
-    - docker --version
+    - apk add aws-cli
   script:
     - echo $CI_REGISTRY_PASSWORD | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
     - docker pull $CI_REGISTRY_IMAGE
     - docker logout $CI_REGISTRY
-    - aws ecr-public get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $DOCKER_REGISTRY
+    - aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin $DOCKER_REGISTRY
     - docker tag $CI_REGISTRY_IMAGE $DOCKER_IMAGE
     - docker push $DOCKER_IMAGE
     - docker logout $DOCKER_REGISTRY
