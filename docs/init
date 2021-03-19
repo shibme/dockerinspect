@@ -11,8 +11,8 @@ if test "${DOCKER_VERSION_RESPONSE#*$EXPECTED_RESPONSE}" != "$DOCKER_VERSION_RES
   DOCKERINSPECT_CONTAINER=${DOCKERINSPECT_CONTAINER// /_}
   if [ -z "$DOCKERINSPECT_IMAGE" ]; then
     export DOCKERINSPECT_IMAGE="shibme/dockerinspect"
-    docker pull "$DOCKERINSPECT_IMAGE"
   fi
+  docker pull "$DOCKERINSPECT_IMAGE"
 
   DOCKERINSPECT_CACHE="$(pwd)/dockerinspect/cache"
   mkdir -p $DOCKERINSPECT_CACHE
