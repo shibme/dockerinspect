@@ -53,13 +53,11 @@ Mirroring to AWS ECR Public:
   variables:
     DOCKER_REGISTRY: "public.ecr.aws"
     DOCKER_IMAGE: "public.ecr.aws/shibme/dockerinspect"
-  before_script:
-    - apk add aws-cli
   script:
     - echo $CI_REGISTRY_PASSWORD | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
     - docker pull $CI_REGISTRY_IMAGE
     - docker logout $CI_REGISTRY
-    - aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin $DOCKER_REGISTRY
+    - docker run -e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY amazon/aws-cli ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin $DOCKER_REGISTRY
     - docker tag $CI_REGISTRY_IMAGE $DOCKER_IMAGE
     - docker push $DOCKER_IMAGE
     - docker logout $DOCKER_REGISTRY
