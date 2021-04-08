@@ -48,15 +48,22 @@ final class Trivy {
     }
 
     private static void delete(File file) {
-        if (file == null) {
-            return;
+        if (file != null && file.exists()) {
+            if (file.isDirectory()) {
+                for (File f : file.listFiles()) {
+                    delete(f);
+                }
+            }
+            file.delete();
         }
-        if (file.isDirectory()) {
-            for (File f : file.listFiles()) {
-                delete(f);
+    }
+
+    private static void deleteDirContents(File dir) {
+        if (dir != null && dir.exists() && dir.isDirectory()) {
+            for (File file : dir.listFiles()) {
+                delete(file);
             }
         }
-        file.delete();
     }
 
     static synchronized List<TrivyReport> run(String imageName, boolean osOnlyScan, boolean ignoreUnfixed, boolean clearCache) throws DockerInspectException {
@@ -79,7 +86,7 @@ final class Trivy {
             List<TrivyReport> reports = getReports(trivyOutputFile, osOnlyScan);
             delete(trivyOutputFile);
             if (clearCache) {
-                delete(trivyCacheDir);
+                deleteDirContents(trivyCacheDir);
             }
             return reports;
         } catch (Exception e) {
