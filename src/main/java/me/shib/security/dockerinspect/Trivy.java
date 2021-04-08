@@ -17,13 +17,12 @@ final class Trivy {
     private static transient final String scanTool = "Trivy";
     private static transient final SimpleDateFormat outFilDateFormat =
             new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
-    private static transient final File trivyOutputFile =
-            new File("trivy-out-" + outFilDateFormat.format(new Date()) + ".json");
+    private static transient final File trivyCacheDir = new File("/root/.cache/");
 
-    private static String readFromFile() {
+    private static String readFromFile(File trivyOutputFile) {
         StringBuilder contentBuilder = new StringBuilder();
         try {
-            BufferedReader br = new BufferedReader(new FileReader(Trivy.trivyOutputFile));
+            BufferedReader br = new BufferedReader(new FileReader(trivyOutputFile));
             String line;
             while ((line = br.readLine()) != null) {
                 contentBuilder.append(line).append("\n");
@@ -34,8 +33,8 @@ final class Trivy {
         return contentBuilder.toString();
     }
 
-    private static List<TrivyReport> getReports(boolean osOnlyScan) throws DockerInspectException {
-        String json = readFromFile();
+    private static List<TrivyReport> getReports(File trivyOutputFile, boolean osOnlyScan) throws DockerInspectException {
+        String json = readFromFile(trivyOutputFile);
         if (!json.isEmpty()) {
             TrivyReport[] reports = gson.fromJson(json, TrivyReport[].class);
             if (osOnlyScan && reports.length > 1) {
@@ -48,7 +47,20 @@ final class Trivy {
         return null;
     }
 
-    static synchronized List<TrivyReport> run(String imageName, boolean osOnlyScan, boolean ignoreUnfixed) throws DockerInspectException {
+    private static void delete(File file) {
+        if (file == null) {
+            return;
+        }
+        if (file.isDirectory()) {
+            for (File f : file.listFiles()) {
+                delete(f);
+            }
+        }
+        file.delete();
+    }
+
+    static synchronized List<TrivyReport> run(String imageName, boolean osOnlyScan, boolean ignoreUnfixed, boolean clearCache) throws DockerInspectException {
+        File trivyOutputFile = new File("trivy-out-" + outFilDateFormat.format(new Date()) + ".json");
         if (imageName == null) {
             throw new DockerInspectException("Image name required to run scan.");
         }
@@ -64,7 +76,12 @@ final class Trivy {
             command.append(imageName);
             CommandExecutor commandExecutor = new CommandExecutor(command.toString(), scanTool);
             commandExecutor.execute();
-            return getReports(osOnlyScan);
+            List<TrivyReport> reports = getReports(trivyOutputFile, osOnlyScan);
+            delete(trivyOutputFile);
+            if (clearCache) {
+                delete(trivyCacheDir);
+            }
+            return reports;
         } catch (Exception e) {
             throw new DockerInspectException(e);
         }
