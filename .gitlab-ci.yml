@@ -1,24 +1,12 @@
 stages:
   - "Build"
-  - "Release"
   - "Mirror Image"
-
-Maven Build:
-  image: maven:3-jdk-11
-  stage: "Build"
-  script: mvn clean install
-  artifacts:
-    expire_in: 1 day
-    paths:
-      - target/dockerinspect-jar-with-dependencies.jar
-  only:
-    - master
 
 Releasing Docker Image:
   image: docker:latest
   services:
     - docker:dind
-  stage: "Release"
+  stage: "Build"
   script:
     - echo $CI_REGISTRY_PASSWORD | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
     - docker build -t $CI_REGISTRY_IMAGE .
