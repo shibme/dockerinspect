@@ -1,53 +1,27 @@
 stages:
-  - "Build"
-  - "Mirror Image"
+  - "Release"
 
 Releasing Docker Image:
   image: docker:latest
   services:
     - docker:dind
-  stage: "Build"
+  stage: "Release"
+  variables:
+    DOCKERHUB_IMAGE: "shibme/dockerinspect"
+    ECR_PUBLIC_REGISTRY: "public.ecr.aws"
+    ECR_PUBLIC_IMAGE: "public.ecr.aws/shibme/dockerinspect"
   script:
     - echo $CI_REGISTRY_PASSWORD | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
     - docker build -t $CI_REGISTRY_IMAGE .
     - docker push $CI_REGISTRY_IMAGE
     - docker logout $CI_REGISTRY
-  only:
-    - master
-
-Mirroring to DockerHub:
-  image: docker:latest
-  services:
-    - docker:dind
-  stage: "Mirror Image"
-  variables:
-    DOCKER_IMAGE: "shibme/dockerinspect"
-  script:
-    - echo $CI_REGISTRY_PASSWORD | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
-    - docker pull $CI_REGISTRY_IMAGE
-    - docker logout $CI_REGISTRY
     - echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
-    - docker tag $CI_REGISTRY_IMAGE $DOCKER_IMAGE
-    - docker push $DOCKER_IMAGE
+    - docker tag $CI_REGISTRY_IMAGE $DOCKERHUB_IMAGE
+    - docker push $DOCKERHUB_IMAGE
     - docker logout
-  only:
-    - master
-
-Mirroring to AWS ECR Public:
-  image: docker:latest
-  services:
-    - docker:dind
-  stage: "Mirror Image"
-  variables:
-    DOCKER_REGISTRY: "public.ecr.aws"
-    DOCKER_IMAGE: "public.ecr.aws/shibme/dockerinspect"
-  script:
-    - echo $CI_REGISTRY_PASSWORD | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
-    - docker pull $CI_REGISTRY_IMAGE
-    - docker logout $CI_REGISTRY
-    - docker run -e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY amazon/aws-cli ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin $DOCKER_REGISTRY
-    - docker tag $CI_REGISTRY_IMAGE $DOCKER_IMAGE
-    - docker push $DOCKER_IMAGE
-    - docker logout $DOCKER_REGISTRY
+    - docker run -e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY amazon/aws-cli ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin $ECR_PUBLIC_REGISTRY
+    - docker tag $CI_REGISTRY_IMAGE $ECR_PUBLIC_IMAGE
+    - docker push $ECR_PUBLIC_IMAGE
+    - docker logout $ECR_PUBLIC_REGISTRY
   only:
     - master
