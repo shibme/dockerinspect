@@ -6,6 +6,6 @@ public final class DockerInspectException extends Exception {
     }
 
     DockerInspectException(Exception e) {
-        super(e.getMessage());
+        super(e);
     }
 }
