@@ -17,14 +17,14 @@ class TSConvert {
         throw new DockerInspectException("CVE provided is not valid");
     }
 
-    static StewardData toStewardData(List<TrivyReport> reports) throws DockerInspectException {
+    static StewardData toStewardData(List<TrivyResult> reports) throws DockerInspectException {
         String projectName = DockerInspectEnv.DOCKERINSPECT_PROJECT_NAME.getAsString();
         if (projectName == null || projectName.isEmpty()) {
             throw new DockerInspectException("Set " + DockerInspectEnv.DOCKERINSPECT_PROJECT_NAME);
         }
         StewardData data = new StewardData(projectName, toolName);
         data.addContext(projectName);
-        for (TrivyReport report : reports) {
+        for (TrivyResult report : reports) {
             if (report.getVulnerabilities() != null) {
                 for (Vulnerability vulnerability : report.getVulnerabilities()) {
                     String title = "Vulnerability [" + vulnerability.getVulnerabilityId() + "] found in " +

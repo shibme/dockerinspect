@@ -1,13 +1,13 @@
 package me.shib.security.dockerinspect;
 
 import com.google.gson.Gson;
+import com.google.gson.annotations.SerializedName;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -33,16 +33,18 @@ final class Trivy {
         return contentBuilder.toString();
     }
 
-    private static List<TrivyReport> getReports(File trivyOutputFile, boolean osOnlyScan) throws DockerInspectException {
+    private static List<TrivyResult> getResults(File trivyOutputFile, boolean osOnlyScan) throws DockerInspectException {
         String json = readFromFile(trivyOutputFile);
+        System.out.println("Excution Report:\n" + json);
         if (!json.isEmpty()) {
-            TrivyReport[] reports = gson.fromJson(json, TrivyReport[].class);
-            if (osOnlyScan && reports.length > 1) {
-                System.out.println("Report JSON:");
-                System.out.println(json);
-                throw new DockerInspectException("More than one reports identified");
+            TrivyReport report = gson.fromJson(json, TrivyReport.class);
+            List<TrivyResult> results = report.results;
+            if (results != null) {
+                if (osOnlyScan && results.size() > 1) {
+                    throw new DockerInspectException("More than one result identified");
+                }
+                return results;
             }
-            return Arrays.asList(reports);
         }
         return null;
     }
@@ -66,7 +68,7 @@ final class Trivy {
         }
     }
 
-    static synchronized List<TrivyReport> run(String imageName, boolean osOnlyScan, boolean ignoreUnfixed, boolean clearCache) throws DockerInspectException {
+    static synchronized List<TrivyResult> run(String imageName, boolean osOnlyScan, boolean ignoreUnfixed, boolean clearCache) throws DockerInspectException {
         File trivyOutputFile = new File("trivy-out-" + outFilDateFormat.format(new Date()) + ".json");
         if (imageName == null) {
             throw new DockerInspectException("Image name required to run scan.");
@@ -83,7 +85,7 @@ final class Trivy {
             command.append(imageName);
             CommandExecutor commandExecutor = new CommandExecutor(command.toString(), scanTool);
             commandExecutor.execute();
-            List<TrivyReport> reports = getReports(trivyOutputFile, osOnlyScan);
+            List<TrivyResult> reports = getResults(trivyOutputFile, osOnlyScan);
             delete(trivyOutputFile);
             if (clearCache) {
                 deleteDirContents(trivyCacheDir);
@@ -92,6 +94,11 @@ final class Trivy {
         } catch (Exception e) {
             throw new DockerInspectException(e);
         }
+    }
+
+    static class TrivyReport {
+        @SerializedName("Results")
+        private List<TrivyResult> results;
     }
 
 }

@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-final class TrivyReport {
+final class TrivyResult {
 
     @SerializedName("Target")
     private String target;
