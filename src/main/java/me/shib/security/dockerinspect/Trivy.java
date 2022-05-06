@@ -75,7 +75,7 @@ final class Trivy {
         }
         try {
             StringBuilder command = new StringBuilder();
-            command.append("trivy i -f json -o ").append(trivyOutputFile.getName()).append(" ");
+            command.append("trivy i --skip-db-update -f json -o ").append(trivyOutputFile.getName()).append(" ");
             if (osOnlyScan) {
                 command.append("--vuln-type os ");
             }
