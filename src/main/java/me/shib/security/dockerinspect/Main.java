@@ -13,8 +13,9 @@ public final class Main {
         String targetImageName = DockerInspectEnv.DOCKERINSPECT_TARGET_IMAGE.getAsString();
         boolean osOnlyScan = !DockerInspectEnv.DOCKERINSPECT_DEPENDENCY_SCAN.getAsBoolean();
         boolean ignoreUnfixed = DockerInspectEnv.DOCKERINSPECT_IGNORE_UNFIXED.getAsBoolean();
+        String timeout = DockerInspectEnv.DOCKERINSPECT_TIMEOUT.getAsString();
         boolean clearCache = DockerInspectEnv.DOCKERINSPECT_CLEAR_CACHE.getAsBoolean();
-        List<TrivyResult> reports = Trivy.run(targetImageName, osOnlyScan, ignoreUnfixed, clearCache);
+        List<TrivyResult> reports = Trivy.run(targetImageName, osOnlyScan, ignoreUnfixed, timeout, clearCache);
         StewardData stewardData = TSConvert.toStewardData(reports);
         Steward.process(stewardData);
         System.exit(0);

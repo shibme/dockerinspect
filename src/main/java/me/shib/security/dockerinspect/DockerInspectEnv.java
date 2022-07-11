@@ -6,7 +6,8 @@ enum DockerInspectEnv {
     DOCKERINSPECT_PROJECT_NAME("A unique project name for the scan to avoid duplicate issues", true),
     DOCKERINSPECT_DEPENDENCY_SCAN("Set TRUE if application dependency vulnerabilities also need to be considered", false),
     DOCKERINSPECT_IGNORE_UNFIXED("Set TRUE to ignore unfixed vulnerabilities", false),
-    DOCKERINSPECT_CLEAR_CACHE("Set TRUE to clear trivy cache directory", false);
+    DOCKERINSPECT_TIMEOUT("Sets a timeout for the scan", false),
+    DOCKERINSPECT_CLEAR_CACHE("Set TRUE to clear the cache directory", false);
 
     private final String definition;
     private final boolean required;

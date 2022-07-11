@@ -8,7 +8,7 @@ Container image scanning made simple for continuous integration
 
 #### Some environment variables for DockerInspect 😬
 `DOCKERINSPECT_TARGET_IMAGE` - Required
-- The image name with tag [Better if available locally. If not, it will be pulled]
+- The image name with tag [Better if available locally. If not, a pull will be attempted]
 
 `DOCKERINSPECT_PROJECT_NAME` - Required
 - A unique project name for the scan to avoid duplicate issues
@@ -18,6 +18,12 @@ Container image scanning made simple for continuous integration
 
 `DOCKERINSPECT_IGNORE_UNFIXED` - Optional
 - Set TRUE to ignore unfixed vulnerabilities
+
+`DOCKERINSPECT_TIMEOUT` - Optional
+- Sets a timeout for the scan
+
+`DOCKERINSPECT_CLEAR_CACHE` - Optional
+- Set TRUE to clear the cache directory
  
 #### A few more steps, in case you need to sync the findings to an issue tracker 🙄 [All optional]
 - Take a look into [this](https://gitlab.com/shibme/steward/-/blob/master/README.md#configuration-for-consumers) for instructions

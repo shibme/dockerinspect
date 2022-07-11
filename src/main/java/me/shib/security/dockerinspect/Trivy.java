@@ -13,11 +13,11 @@ import java.util.List;
 
 final class Trivy {
 
-    private static transient final Gson gson = new Gson();
-    private static transient final String scanTool = "Trivy";
-    private static transient final SimpleDateFormat outFilDateFormat =
+    private static final Gson gson = new Gson();
+    private static final String scanTool = "Trivy";
+    private static final SimpleDateFormat outFilDateFormat =
             new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
-    private static transient final File trivyCacheDir = new File("/root/.cache/");
+    private static final File trivyCacheDir = new File("/root/.cache/");
 
     private static String readFromFile(File trivyOutputFile) {
         StringBuilder contentBuilder = new StringBuilder();
@@ -68,7 +68,7 @@ final class Trivy {
         }
     }
 
-    static synchronized List<TrivyResult> run(String imageName, boolean osOnlyScan, boolean ignoreUnfixed, boolean clearCache) throws DockerInspectException {
+    static synchronized List<TrivyResult> run(String imageName, boolean osOnlyScan, boolean ignoreUnfixed, String timeout, boolean clearCache) throws DockerInspectException {
         File trivyOutputFile = new File("trivy-out-" + outFilDateFormat.format(new Date()) + ".json");
         if (imageName == null) {
             throw new DockerInspectException("Image name required to run scan.");
@@ -81,6 +81,9 @@ final class Trivy {
             }
             if (ignoreUnfixed) {
                 command.append("--ignore-unfixed ");
+            }
+            if (timeout != null && !timeout.isEmpty()) {
+                command.append("--timeout ").append(timeout.trim()).append(" ");
             }
             command.append(imageName);
             CommandExecutor commandExecutor = new CommandExecutor(command.toString(), scanTool);
