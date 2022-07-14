@@ -8,6 +8,8 @@ final class TrivyResult {
 
     @SerializedName("Target")
     private String target;
+    @SerializedName("Class")
+    private String resultClass;
     @SerializedName("Type")
     private String type;
     @SerializedName("Vulnerabilities")
@@ -15,6 +17,10 @@ final class TrivyResult {
 
     String getTarget() {
         return target;
+    }
+
+    String getResultClass() {
+        return resultClass;
     }
 
     String getType() {

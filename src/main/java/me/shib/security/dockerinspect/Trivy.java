@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -40,8 +41,12 @@ final class Trivy {
             TrivyReport report = gson.fromJson(json, TrivyReport.class);
             List<TrivyResult> results = report.results;
             if (results != null) {
-                if (osOnlyScan && results.size() > 1) {
-                    throw new DockerInspectException("More than one result identified");
+                if (osOnlyScan) {
+                    for (TrivyResult result : results) {
+                        if (result.getResultClass().equalsIgnoreCase("os-pkgs")) {
+                            return Collections.singletonList(result);
+                        }
+                    }
                 }
                 return results;
             }
@@ -76,9 +81,6 @@ final class Trivy {
         try {
             StringBuilder command = new StringBuilder();
             command.append("trivy i -f json -o ").append(trivyOutputFile.getName()).append(" ");
-            if (osOnlyScan) {
-                command.append("--vuln-type os ");
-            }
             if (ignoreUnfixed) {
                 command.append("--ignore-unfixed ");
             }
@@ -88,12 +90,12 @@ final class Trivy {
             command.append(imageName);
             CommandExecutor commandExecutor = new CommandExecutor(command.toString(), scanTool);
             commandExecutor.execute();
-            List<TrivyResult> reports = getResults(trivyOutputFile, osOnlyScan);
+            List<TrivyResult> results = getResults(trivyOutputFile, osOnlyScan);
             delete(trivyOutputFile);
             if (clearCache) {
                 deleteDirContents(trivyCacheDir);
             }
-            return reports;
+            return results;
         } catch (Exception e) {
             throw new DockerInspectException(e);
         }
